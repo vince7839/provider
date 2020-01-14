@@ -1,0 +1,48 @@
+server:
+  servlet:
+    context-path: /provider
+  port: 8088
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:~/database/provider
+
+  mvc:
+    view:
+      suffix: .html
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    multipart:
+      max-file-size: 3072MB
+      max-request-size: 3072MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8:00
+  thymeleaf:
+    cache: false
+  mail:
+    host: smtp.sagereal.com
+    username: liaowenxing@sagereal.com
+    password: lwx081920
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          connectiontimeout: 10000
+
+logging:
+  file: ~/log/provider.log
+  level:
+    root: info
+  pattern:
+    console: '%red(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level) %boldMagenta(%logger) %m%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} %-5level [%logger] %m%n'
+
+build:
+  timestamp: @maven.build.timestamp@

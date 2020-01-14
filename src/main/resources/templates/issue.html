@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>issue详情</title>
+    <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+</head>
+<body bgcolor="#eeeeee">
+<div class="layui-fluid" style="margin-top:1%">
+    <div class="layui-col-md6 layui-col-md-offset3">
+        <span class="layui-breadcrumb" lay-separator="/" style="margin-bottom: 10px">
+            <a th:href="@{|/push#tab1|}" style="font-size: 20px;text-decoration:#0000FF;color: #0000FF">首页</a>
+            <a style="font-size: 20px"><cite>查看</cite></a>
+        </span>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <h2 style="text-align: center">已登记查看</h2>
+            </div>
+            <div class="layui-card-body">
+                <form id="form" class="layui-form layui-form-pane" method="post">
+                    <input hidden="hidden" name="issueId" th:value="${issue.issueId}">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">eService ID</label>
+                        <div class="layui-input-block">
+                            <input id="eServiceId" th:value="${issue.EServiceId}" required name="eServiceId"
+                                   class="layui-input" lay-verify='eServiceId'/>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">优先级</label>
+                        <div class="layui-input-block">
+                            <select id="priority" name="priority" class="layui-select">
+                                <option value="1">普通</option>
+                                <option value="2">较高</option>
+                                <option value="3">很高</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">项目类型</label>
+                        <div class="layui-input-block">
+                            <select id="projectType" name="projectType" class="layui-select">
+                                <option value="1">Smart Phone</option>
+                                <option value="2">Feature Phone</option>
+                                <option value="3">Smart Feature Phone</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">问题描述</label>
+                        <textarea id="description" name="description" required class="layui-textarea">[[${issue.description}]]</textarea>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">加急原因</label>
+                        <textarea id="reason" name="reason" required class="layui-textarea">[[${issue.reason}]]</textarea>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">可能影响</label>
+                        <div class="layui-input-block">
+                            <input id="impact" name="impact" th:value="${issue.impact}" required class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">期待解决</label>
+                        <div class="layui-input-block">
+                            <input id="expectDate" name="expectDate" th:value="${#dates.format(issue.expectDate,'yyyy-MM-dd')}" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <select id="state" name="state" class="layui-select">
+                                <option value="open">open</option>
+                                <option value="close">close</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">提问人</label>
+                        <div class="layui-input-block">
+                            <input id="proposer" name="proposer" th:value="${issue.proposer}" required class="layui-input"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">邮箱</label>
+                        <div class="layui-input-block">
+                            <input id="mail" name="mail" th:value="${issue.mail}" lay-verify="mail"
+                                   required class="layui-input" placeholder="只填提问人的邮箱,仅限@sagereal.com和@mobiwire.com.hk"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">提交日期</label>
+                        <div class="layui-input-block">
+                            <input id="submitDate" name="submitDate" th:value="${#dates.format(issue.submitDate,'yyyy-MM-dd HH:mm:ss')}" readonly class="layui-input"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" style="text-align: center">
+                        <button class="layui-btn" lay-submit>修改</button>
+                        <button id="btn_delete" class="layui-btn" type="button" th:onclick="|deleteIssue(${issue.issueId})|">删除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{|/layui/layui.all.js|}" media="all"></script>
+<script type="text/javascript" th:src="@{|/js/issue.js|}"></script>
+<script th:inline="javascript">
+    initSelect([[${issue.priority}]],[[${issue.state}]],[[${issue.projectType}]])
+</script>
+</html>

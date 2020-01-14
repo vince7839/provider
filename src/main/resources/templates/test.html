@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据源调试</title>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+
+<body bgcolor="#eeeeee">
+<div class="layui-fluid" style="margin-top:1%">
+    <div class="layui-col-md6 layui-col-md-offset3">
+
+        <div class="layui-tab layui-tab-brief" lay-filter='mytab'>
+            <ul class="layui-tab-title" style="text-align: center">
+                <li lay-id="tab0" class="layui-this">添加</li>
+                <li lay-id="tab1">查看</li>
+                <li lay-id="tab2">其他</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-card">
+                        <div class="layui-card-header">添加测试数据</div>
+                        <div class="layui-card-body">
+                            <form id="form" class="layui-form layui-form-pane">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">IMEI</label>
+                                    <div class="layui-input-block">
+                                        <input id="imei" type="text" name="imei" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">经度</label>
+                                    <div class="layui-input-block">
+                                        <input id="longitude" type="text" name="longitude" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">纬度</label>
+                                    <div class="layui-input-block">
+                                        <input id="latitude" type="text" name="latitude" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">温度</label>
+                                    <div class="layui-input-block">
+                                        <input id="temperature" type="text" name="temperature" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">震动</label>
+                                    <div class="layui-input-block">
+                                        <input id="shake" type="number" name="shake" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">日期</label>
+                                    <div class="layui-input-block">
+                                        <input id="date" type="text" name="date" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="layui-form-item" style="text-align: center">
+                                <button id="btn_add" class="layui-btn">确认添加</button>
+                                <button id="btn_fill" class="layui-btn">随机数据</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-tab-item">
+                    <div class="layui-card">
+                        <div class="layui-card-header">所有数据</div>
+                        <div class="layui-card-body">
+                            <table class="layui-table" lay-filter="demo">
+                                <thead>
+                                <tr>
+                                    <th lay-data="{width:100}">imei</th>
+                                    <th lay-data="{width:100}">longitude</th>
+                                    <th lay-data="{width:100}">latitude</th>
+                                    <th lay-data="{width:100}">temperature</th>
+                                    <th lay-data="{width:100}">date</th>
+                                    <th lay-data="{width:100}">shake</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                </tbody>
+                            </table>
+                            <div id="page" style="text-align: center"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-tab-item">
+                    <div class="layui-card">
+                        <div class="layui-card-header">版本日期</div>
+                        <div class="layui-card-body" th:text="${timestamp}"></div>
+                    </div>
+
+                    <div class="layui-card">
+                        <div class="layui-card-header" th:text="删除数据"></div>
+                        <div class="layui-card-body">
+                            <div class="layui-form layui-form-pane">
+                                <form th:action="@{|/remove|}">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">IMEI</label>
+                                        <div class="layui-input-block">
+                                            <input type="number" class="layui-input" name="imei">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item" style="text-align: center">
+                                        <input type="submit" class="layui-btn">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-card">
+                        <div class="layui-card-header" th:text="文件上传测试"></div>
+                        <div class="layui-card-body">
+                            <div class="layui-form">
+                                <form th:action="@{|/upload|}" enctype="multipart/form-data" method="post">
+                                    <div class="layui-form-item">
+                                        <input type="file" name="file">
+                                    </div>
+                                    <div class="layui-form-item" style="text-align: center">
+                                        <input type="submit" class="layui-btn">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="layui/layui.all.js" media="all"></script>
+<script>
+
+    layui.laydate.render({elem: '#date', type: 'datetime',
+        format: 'yyyy-MM-dd HH:mm:ss',isInitValue:true,value:new Date()});
+
+    layui.laypage.render({
+        elem: 'page'
+        ,count: [[${count}]]
+        ,jump: function (obj,first){
+            pageQuery(obj.curr-1);
+        }
+    });
+
+    $("#btn_add").click(function () {
+        $.get("/provider/phoneinfo/save", $("#form").serialize(), function (data) {
+            console.log(data)
+            if(data.code == "200"){
+                alert("添加成功")
+                window.location.reload()
+            }else{
+                alert("添加失败")
+            }
+        })
+    })
+
+    $("#btn_fill").click(function () {
+        $("#imei").val(randomStr(9))
+        $("#longitude").val(randomStr(3)+"."+randomStr(2))
+        $("#latitude").val(randomStr(3)+"."+randomStr(2))
+        $("#temperature").val(randomStr(2))
+        $("#shake").val(Math.round(Math.random()*100));
+    })
+
+
+    function randomStr(len) {
+        len = len || 32;
+        var $chars = '0123456789';
+        var maxPos = $chars.length;
+        var str = '';
+        for (i = 0; i < len; i++) {
+            str += $chars.charAt(Math.floor(Math.random() * maxPos));
+        }
+        return str;
+    }
+
+    function pageQuery(page) {
+        $.get("/provider/phoneinfo/page/"+page, function (data) {
+            console.log(data);
+            $("#tbody").empty();
+            $.each(data,function (index,item){
+                console.log(item);
+                var row =
+                    "<tr>"
+                    + "<td>"+item.imei+"</td>"
+                    + "<td>"+item.longitude+"</td>"
+                    + "<td>"+item.latitude+"</td>"
+                    + "<td>"+item.temperature+"</td>"
+                    + "<td>"+item.date+"</td>"
+                    + "<td>"+item.shake+"</td>"
+                    + "</tr>";
+                $("#tbody").append(row);
+            })
+        })
+    }
+
+
+</script>
+</html>

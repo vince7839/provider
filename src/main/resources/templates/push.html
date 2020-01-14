@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>紧急eService登记</title>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body bgcolor="#eeeeee">
+<div class="layui-fluid">
+    <div class="layui-col-md6 layui-col-md-offset3" style="margin-top:1%;margin-bottom: 1%">
+
+        <div class="layui-tab layui-tab-brief" lay-filter='mytab'>
+            <ul class="layui-tab-title" style="text-align: center">
+                <li lay-id="tab0" class="layui-this">登记</li>
+                <li lay-id="tab1">查看</li>
+                <li lay-id="tab2">功能</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <h2 style="text-align: center">紧急eService登记</h2>
+                        </div>
+                        <div class="layui-card-body">
+                            <form id="form" class="layui-form layui-form-pane" method="post">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">eService ID</label>
+                                    <div class="layui-input-block">
+                                        <input id="eServiceId" name="eServiceId" lay-verify='eServiceId'
+                                               required placeholder="ALPS+8位数字,MAUI_8位数字" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">优先级</label>
+                                    <div class="layui-input-block">
+                                        <select id="priority" name="priority" class="layui-select">
+                                            <option value="1">普通</option>
+                                            <option value="2">较高</option>
+                                            <option value="3">很高</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">项目类型</label>
+                                    <div class="layui-input-block">
+                                        <select id="projectType" name="projectType" class="layui-select">
+                                            <option value="1">Smart Phone</option>
+                                            <option value="2">Feature Phone</option>
+                                            <option value="3">Smart Feature Phone</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">问题描述</label>
+                                    <textarea id="description" name="description" required class="layui-textarea"
+                                              placeholder="请输入问题描述（255个字符以内）" maxlength="255"></textarea>
+                                </div>
+                                <div class="layui-form-item layui-form-text">
+                                    <label class="layui-form-label">加急原因</label>
+                                    <textarea id="reason" name="reason" required class="layui-textarea"
+                                              placeholder="请输入push原因（255个字符以内）" maxlength="255"></textarea>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">可能影响</label>
+                                    <div class="layui-input-block">
+                                        <input id="impact" name="impact" required class="layui-input" placeholder="一句话描述可能的后果"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">期待解决</label>
+                                    <div class="layui-input-block">
+                                        <input id="expectDate" type="text" name="expectDate" class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">状态</label>
+                                    <div class="layui-input-block">
+                                        <select id="state" name="state" class="layui-select">
+                                            <option value="open">open</option>
+                                            <option value="close">close</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">提问人</label>
+                                    <div class="layui-input-block">
+                                        <input id="proposer" name="proposer" required class="layui-input"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">邮箱</label>
+                                    <div class="layui-input-block">
+                                        <input id="mail" name="mail" required class="layui-input"
+                                               lay-verify="mail" placeholder="只填提问人的邮箱,仅限@sagereal.com和@mobiwire.com.hk"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item" style="text-align: center">
+                                    <button id="btn_submit" class="layui-btn" lay-submit>提交</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <h2 style="text-align: center">已登记issue</h2>
+                        </div>
+                        <div class="layui-card-header">
+                            <label for="proposer">按提交人筛选</label>
+                            <input id="condition_proposer">
+                        </div>
+                        <div class="layui-card-body">
+                            <table class="layui-table" lay-filter="demo">
+                                <thead>
+                                <tr>
+                                    <th lay-data="{width:100}" style="text-align: center">eService ID</th>
+                                    <th lay-data="{width:100}" style="text-align: center">优先级</th>
+                                    <th lay-data="{width:100}" style="text-align: center">提交人</th>
+                                    <th lay-data="{width:100}" style="text-align: center">状态</th>
+                                    <th lay-data="{width:100}" style="text-align: center">最后修改</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody">
+                                </tbody>
+                            </table>
+                            <p style="color: green">注:点击eService ID可跳转至MTK网页,点击表格可以编辑修改</p>
+                            <div id="page" style="text-align: center"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <h2 style="text-align: center">下载</h2>
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="layui-form layui-form-pane">
+                                <form th:action="@{|/issue/export|}">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">开始日期</label>
+                                        <div class="layui-input-block">
+                                            <input id="startDate" name="startDate" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item" style="text-align: center">
+                                        <input type="submit" class="layui-btn" value="下载">
+                                        <button type="button" class="layui-btn">
+                                            <a th:href="@{|/issue/export|}" style="color: white">下载所有</a>
+                                        </button>
+                                    </div>
+                                </form>
+                                <div class="layui-form-item">
+                                    <p style="color: green">注："下载"仅导出选定日期之后登记的issue,"下载所有"导出所有记录,跟日期无关</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="layui-card">
+                        <div class="layui-card-header"><h2 style="text-align: center">发送提醒</h2></div>
+                        <div class="layui-card-body layui-form layui-form-pane">
+                            <form id="mailForm">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">内容</label>
+                                <div class="layui-input-block">
+                                    <input name="note" class="layui-input" placeholder="邮件要附带的内容，可以为空">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码</label>
+                                <div class="layui-input-block">
+                                    <input name="password" class="layui-input" type="password">
+                                </div>
+                            </div>
+                            <div class="layui-form-item" style="text-align: center">
+                                <button class="layui-btn" lay-submit>确认发送</button>
+                            </div>
+                            <div class="layui-row">
+                                <p style="color: green">注：此功能会向所有提问者发送邮件，所以仅限持有密码的用户使用</p>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{|/layui/layui.all.js|}" media="all"></script>
+<script type="text/javascript" th:src="@{|/js/push.js|}"></script>
+</html>

@@ -112,8 +112,17 @@
                             <h2 style="text-align: center">已登记issue</h2>
                         </div>
                         <div class="layui-card-header">
+
                             <label for="proposer">按提交人筛选</label>
                             <input id="condition_proposer">
+
+                            <label for="state">按状态筛选</label>
+                            <select id="condition_state" class="layui-select" lay-filter="filter-state">
+                                <option value="all">全部</option>
+                                <option value="open">open</option>
+                                <option value="close">close</option>
+                            </select>
+
                         </div>
                         <div class="layui-card-body">
                             <table class="layui-table" lay-filter="demo">
@@ -148,10 +157,16 @@
                                             <input id="startDate" name="startDate" class="layui-input">
                                         </div>
                                     </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">筛选条件</label>
+                                        <div class="layui-input-block">
+                                            <input type="checkbox" name="justOpen" title="仅下载open的项">
+                                        </div>
+                                    </div>
                                     <div class="layui-form-item" style="text-align: center">
                                         <input type="submit" class="layui-btn" value="下载">
                                         <button type="button" class="layui-btn">
-                                            <a th:href="@{|/issue/export|}" style="color: white">下载所有</a>
+                                            <a th:href="@{|/issue/export|}" style="color: white">全部</a>
                                         </button>
                                     </div>
                                 </form>
@@ -166,24 +181,24 @@
                         <div class="layui-card-header"><h2 style="text-align: center">发送提醒</h2></div>
                         <div class="layui-card-body layui-form layui-form-pane">
                             <form id="mailForm">
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">内容</label>
-                                <div class="layui-input-block">
-                                    <input name="note" class="layui-input" placeholder="邮件要附带的内容，可以为空">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">内容</label>
+                                    <div class="layui-input-block">
+                                        <input name="note" class="layui-input" placeholder="邮件要附带的内容，可以为空">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">密码</label>
-                                <div class="layui-input-block">
-                                    <input name="password" class="layui-input" type="password">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">密码</label>
+                                    <div class="layui-input-block">
+                                        <input name="password" class="layui-input" type="password">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="layui-form-item" style="text-align: center">
-                                <button class="layui-btn" lay-submit>确认发送</button>
-                            </div>
-                            <div class="layui-row">
-                                <p style="color: green">注：此功能会向所有提问者发送邮件，所以仅限持有密码的用户使用</p>
-                            </div>
+                                <div class="layui-form-item" style="text-align: center">
+                                    <button class="layui-btn" lay-submit>确认发送</button>
+                                </div>
+                                <div class="layui-row">
+                                    <p style="color: green">注：此功能会向所有提问者发送邮件，所以仅限持有密码的用户使用</p>
+                                </div>
                             </form>
                         </div>
                     </div>

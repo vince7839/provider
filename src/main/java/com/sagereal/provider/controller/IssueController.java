@@ -6,17 +6,26 @@ import com.sagereal.provider.pojo.ResponseDTO;
 import com.sagereal.provider.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class IssueController {
@@ -74,11 +83,27 @@ public class IssueController {
 
     @RequestMapping("/issue/page/{page}")
     @ResponseBody
-    public PageVO page(@PathVariable Integer page, String proposer){
+    public PageVO page(@PathVariable Integer page, String proposer,String state){
         System.out.println("find issue by page:"+page+" proposer:"+proposer);
         PageVO vo = new PageVO();
         if (page != null){
-            Page<Issue> result = service.findByPage(page,proposer);
+            Specification<Issue> sp = new Specification<Issue>() {
+                List<Predicate> predicates = new ArrayList<>();
+                @Override
+                public Predicate toPredicate(Root<Issue> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                    if (!StringUtils.isEmpty(proposer)){
+                        predicates.add(cb.like(root.get("proposer").as(String.class),"%"+proposer+"%"));
+                    }
+                    if (!"all".equals(state)){
+                        predicates.add(cb.equal(root.get("state").as(String.class),state));
+                    }
+                    cq.orderBy(cb.desc(root.get("modifyDate")));
+                    Predicate[] arr = new Predicate[predicates.size()];
+                    cq.where(predicates.toArray(arr));
+                    return cq.getRestriction();
+                }
+            };
+            Page<Issue> result = service.findByPage(page,sp);
             vo.setCount(result.getTotalElements());
             vo.setPage(page);
             vo.setData(result.getContent());
@@ -97,8 +122,9 @@ public class IssueController {
     }
 
     @RequestMapping("/issue/export")
-    public void export(HttpServletResponse response, @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate){
-        System.out.println("export issure:"+startDate);
+    public void export(HttpServletResponse response, @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate
+            ,Boolean justOpen){
+        System.out.println("export issure:"+startDate+" justOpen:"+justOpen);
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String filename = startDate == null ? "issue_all.xlsx"
@@ -106,7 +132,25 @@ public class IssueController {
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition","attachment;filename="
                     +filename);
-            service.export(startDate,response.getOutputStream());
+            Specification<Issue> sp = new Specification<Issue>() {
+                List<Predicate> predicates = new ArrayList<>();
+                @Override
+                public Predicate toPredicate(Root<Issue> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
+                    if (startDate != null){
+                        Predicate predicate = cb.greaterThan(root.get("submitDate").as(Date.class),startDate);
+                        predicates.add(predicate);
+                    }
+                    if (Boolean.TRUE.equals(justOpen)){
+                        Predicate predicate = cb.equal(root.get("state").as(String.class),"open");
+                        predicates.add(predicate);
+                    }
+                    cq.orderBy(cb.desc(root.get("modifyDate")));
+                    Predicate[] arr = new Predicate[predicates.size()];
+                    cq.where(predicates.toArray(arr));
+                    return cq.getRestriction();
+                }
+            };
+            service.export(sp,response.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,5 +182,23 @@ public class IssueController {
             dto.setData(Integer.valueOf(count));
         }
         return dto;
+    }
+
+    @RequestMapping("/issue/nothing/{id}")
+    public String nothing(@PathVariable Integer id){
+        System.out.println("nothing");
+        Issue i = service.findByIssueId(id);
+        i.setModifyDate(new Date());
+        service.save(i);
+        return "nothing";
+    }
+
+    @RequestMapping("/issue/close/{id}")
+    public String close(@PathVariable Integer id){
+        System.out.println("close");
+        Issue i = service.findByIssueId(id);
+        i.setState("close");
+        service.save(i);
+        return "thanks";
     }
 }

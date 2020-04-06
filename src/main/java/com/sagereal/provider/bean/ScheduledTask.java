@@ -1,5 +1,7 @@
 package com.sagereal.provider.bean;
 
+import com.sagereal.provider.pojo.Backlog;
+import com.sagereal.provider.service.BacklogService;
 import com.sagereal.provider.service.IssueService;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
@@ -21,10 +23,13 @@ public class ScheduledTask {
 
     @Autowired
     IssueService issueService;
+    @Autowired
+    BacklogService backlogService;
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void remind(){
         issueService.sendNotification(null);
+        backlogService.check(null);
     }
 
     @Scheduled(cron = "30 30 * * * ? ")

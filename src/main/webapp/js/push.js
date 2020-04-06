@@ -78,7 +78,8 @@ $("#mailForm").submit(function () {
 
 function refresh(page) {
     var proposer = $("#condition_proposer").val();
-    var url = "/provider/issue/page/"+page+"?proposer="+proposer;
+    var state = $("#condition_state").val();
+    var url = "/provider/issue/page/"+page+"?proposer="+proposer+"&state="+state;
     console.log(url);
     $.get(url, queryCallback);
 }
@@ -100,5 +101,9 @@ $(document).ready(function () {
     $('#condition_proposer').bind('input propertychange', function() {
         refresh(0);
     });
+    $('#condition_state').on('change',function(){
+        console.log('state change')
+        refresh(0);
+    })
     refresh(0);
 })

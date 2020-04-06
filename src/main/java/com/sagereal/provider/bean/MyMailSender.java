@@ -2,24 +2,33 @@ package com.sagereal.provider.bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
+
 import javax.mail.Address;
 import javax.mail.SendFailedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MailSender implements Runnable {
+@Component
+public class MyMailSender implements Runnable {
 
+    @Autowired
     JavaMailSender mailSender;
+
     SimpleMailMessage mailMessage;
-    static Logger logger = LoggerFactory.getLogger(MailSender.class);
-    public MailSender(JavaMailSender mailSender,SimpleMailMessage mailMessage) {
-        this.mailSender = mailSender;
-        this.mailMessage = mailMessage;
+
+    static Logger logger = LoggerFactory.getLogger(MyMailSender.class);
+
+    public void send(SimpleMailMessage msg){
+        this.mailMessage = msg;
         logger.error(Arrays.toString(mailMessage.getTo()));
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override

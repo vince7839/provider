@@ -35,9 +35,14 @@ spring:
         smtp:
           auth: true
           connectiontimeout: 10000
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
 
 logging:
-  file: ~/log/provider.log
+  file: /var/log/provider.log
   level:
     root: info
   pattern:

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>拷贝检查记录</title>
+    <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+</head>
+<body bgcolor="#eeeeee">
+<div class="layui-col-md10 layui-col-md-offset1" style="margin-top: 1%;text-align: center">
+    <div class="layui-card">
+        <div class="layui-card-header" style="text-align: center"><h1>下列文件存在拷贝</h1></div>
+        <div class="layui-card-body">
+            <p th:each="path : ${object.list}" th:text="${path}"></p>
+        </div>
+        <div class="layui-card-body" th:if="${object.finish eq true}">
+            <button class="layui-btn layui-btn-disabled">已处理</button>
+            <button class="layui-btn" th:onclick="|remove(${object.id})|">删除</button>
+        </div>
+        <div class="layui-card-body" th:if="${object.finish ne true}">
+            <button class="layui-btn" th:onclick="|finish(${object.id})|">我已处理</button>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" th:src="@{|/layui/layui.all.js|}" media="all"></script>
+<script>
+    function finish(id) {
+        var url = '/provider/rep/finish/'+id
+        $.get(url,function (res) {
+            console.log(res)
+            window.location.reload()
+        })
+
+    }
+
+    function remove(id) {
+        var url = '/provider/rep/delete/'+id
+        $.get(url,function (res) {
+            console.log(res)
+            window.location.href='/provider/rep'
+        })
+
+    }
+</script>
+</html>

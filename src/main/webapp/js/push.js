@@ -5,7 +5,7 @@ layui.laydate.render({elem: '#startDate', type: 'date',
     format: 'yyyy-MM-dd',isInitValue:true,value:new Date()});
 
 layui.form.verify({
-    eServiceId:[/ALPS[0-9]{8}|MAUI_[0-9]{8}/,'请填写正确的eService Id'],
+    eServiceId:[/ALPS[0-9]{8}|MAUI_[0-9]{8}|SPCSS[0-9]{8}/,'请填写正确的id'],
     mail:[/[0-9a-zA-Z_-]+@(sagereal\.com|mobiwire\.com\.hk)/,'请输入正确的邮箱地址']
 })
 
@@ -29,9 +29,14 @@ function queryCallback(json) {
         var color = item.state == 'close' ? 'green' : 'red';
         var pColor = item.priority == 1 ? 'green' : item.priority == 2 ? 'orange' : 'red';
         var priorityText = item.priority == 1 ? "普通" : item.priority==2 ? "较高":"很高";
+        var support = item.support == 'cq' ? "展讯" : "MTK";
+        var sColor = item.support == 'cq' ? "cyan" : "purple";
+        var url = item.support == 'cq' ? "http://spcss.unisoc.com:2008/cqweb/" :
+            ("https://eservice.mediatek.com/eservice-portal/elastic_search?keyword="+item.eserviceId);
         var row =
             "<tr onclick='issueQuery("+item.issueId+")'>"
-            + "<td onclick='window.event.stopPropagation()' style='text-align: center'><a style='color: #0000FF;text-decoration: underline' target='_black' href='https://eservice.mediatek.com/eservice-portal/elastic_search?keyword="+item.eserviceId+"'>"+item.eserviceId+"</a></td>"
+            + "<td onclick='window.event.stopPropagation()' style='text-align: center'><a style='color: #0000FF;text-decoration: underline' target='_black' href='"+url+"'>"+item.eserviceId+"</a></td>"
+            + "<td style='text-align: center;color:"+sColor+"'>"+support+"</td>"
             + "<td style='text-align: center;color:"+pColor+"'>"+priorityText+"</td>"
             + "<td style='text-align: center'>"+item.proposer+"</td>"
             + "<td style='text-align: center;color:"+color+"'>"+item.state+"</td>"
@@ -79,7 +84,8 @@ $("#mailForm").submit(function () {
 function refresh(page) {
     var proposer = $("#condition_proposer").val();
     var state = $("#condition_state").val();
-    var url = "/provider/issue/page/"+page+"?proposer="+proposer+"&state="+state;
+    var support = $("#condition_support").val();
+    var url = "/provider/issue/page/"+page+"?proposer="+proposer+"&state="+state+"&support="+support;
     console.log(url);
     $.get(url, queryCallback);
 }
@@ -102,6 +108,10 @@ $(document).ready(function () {
         refresh(0);
     });
     $('#condition_state').on('change',function(){
+        console.log('state change')
+        refresh(0);
+    });
+    $('#condition_support').on('change',function(){
         console.log('state change')
         refresh(0);
     })

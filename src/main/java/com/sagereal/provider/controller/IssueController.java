@@ -45,6 +45,9 @@ public class IssueController {
     public ResponseDTO submit(Issue issue) {
         System.out.println("add issue:"+issue);
         ResponseDTO dto = new ResponseDTO();
+        String support = issue.getEServiceId().startsWith("SPCSS")?"cq":"mtk";
+        issue.setSupport(support);
+
         try {
             service.save(issue);
             dto.setCode(200);
@@ -83,7 +86,7 @@ public class IssueController {
 
     @RequestMapping("/issue/page/{page}")
     @ResponseBody
-    public PageVO page(@PathVariable Integer page, String proposer,String state){
+    public PageVO page(@PathVariable Integer page, String proposer,String state,String support){
         System.out.println("find issue by page:"+page+" proposer:"+proposer);
         PageVO vo = new PageVO();
         if (page != null){
@@ -96,6 +99,9 @@ public class IssueController {
                     }
                     if (!"all".equals(state)){
                         predicates.add(cb.equal(root.get("state").as(String.class),state));
+                    }
+                    if (!"all".equals(support)){
+                        predicates.add(cb.equal(root.get("support").as(String.class),support));
                     }
                     cq.orderBy(cb.desc(root.get("modifyDate")));
                     Predicate[] arr = new Predicate[predicates.size()];
@@ -123,12 +129,16 @@ public class IssueController {
 
     @RequestMapping("/issue/export")
     public void export(HttpServletResponse response, @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate
-            ,Boolean justOpen){
+            ,Boolean justOpen,String support){
+
         System.out.println("export issure:"+startDate+" justOpen:"+justOpen);
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String filename = startDate == null ? "issue_all.xlsx"
-                    : String.format("issue_after_%s.xlsx",format.format(startDate));
+//            String filename = startDate == null ? "issue_all.xlsx"
+//                    : String.format("issue_after_%s.xlsx",format.format(startDate));
+
+            String filename = String.format("issue_%s.xlsx",support);
+
             response.setContentType("application/octet-stream");
             response.setHeader("Content-Disposition","attachment;filename="
                     +filename);
@@ -140,7 +150,13 @@ public class IssueController {
                         Predicate predicate = cb.greaterThan(root.get("submitDate").as(Date.class),startDate);
                         predicates.add(predicate);
                     }
-                    if (Boolean.TRUE.equals(justOpen)){
+
+                    if (!"all".equals(support)){
+                        Predicate predicate = cb.equal(root.get("support").as(String.class),support);
+                        predicates.add(predicate);
+                    }
+
+                    if (Boolean.TRUE.equals(justOpen)||true){
                         Predicate predicate = cb.equal(root.get("state").as(String.class),"open");
                         predicates.add(predicate);
                     }

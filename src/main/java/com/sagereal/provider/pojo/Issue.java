@@ -42,4 +42,5 @@ public class Issue {
     Date modifyDate;
 
     String mail;
+    String support;
 }

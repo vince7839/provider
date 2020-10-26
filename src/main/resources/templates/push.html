@@ -28,7 +28,7 @@
                                     <label class="layui-form-label">eService ID</label>
                                     <div class="layui-input-block">
                                         <input id="eServiceId" name="eServiceId" lay-verify='eServiceId'
-                                               required placeholder="ALPS+8位数字,MAUI_8位数字" class="layui-input"/>
+                                               required placeholder="ALPS+8位数字,MAUI_8位数字,SPCSS+8位数字" class="layui-input"/>
                                     </div>
                                 </div>
                                 <div class="layui-form-item">
@@ -123,12 +123,19 @@
                                 <option value="close">close</option>
                             </select>
 
+                            <label for="condition_support">按平台筛选</label>
+                            <select id="condition_support" class="layui-select" lay-filter="filter-state">
+                                <option value="all">全部</option>
+                                <option value="mtk">MTK</option>
+                                <option value="cq">展讯</option>
+                            </select>
                         </div>
                         <div class="layui-card-body">
                             <table class="layui-table" lay-filter="demo">
                                 <thead>
                                 <tr>
-                                    <th lay-data="{width:100}" style="text-align: center">eService ID</th>
+                                    <th lay-data="{width:100}" style="text-align: center">ID</th>
+                                    <th lay-data="{width:100}" style="text-align: center">平台</th>
                                     <th lay-data="{width:100}" style="text-align: center">优先级</th>
                                     <th lay-data="{width:100}" style="text-align: center">提交人</th>
                                     <th lay-data="{width:100}" style="text-align: center">状态</th>
@@ -151,23 +158,33 @@
                         <div class="layui-card-body">
                             <div class="layui-form layui-form-pane">
                                 <form th:action="@{|/issue/export|}">
+<!--                                    <div class="layui-form-item">-->
+<!--                                        <label class="layui-form-label">开始日期</label>-->
+<!--                                        <div class="layui-input-block">-->
+<!--                                            <input id="startDate" name="startDate" class="layui-input">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="layui-form-item">-->
+<!--                                        <label class="layui-form-label">筛选条件</label>-->
+<!--                                        <div class="layui-input-block">-->
+<!--                                            <input type="checkbox" name="justOpen" title="仅下载open的项">-->
+<!--                                        </div>-->
+<!--                                    </div>-->
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">开始日期</label>
+                                        <label class="layui-form-label">平台</label>
                                         <div class="layui-input-block">
-                                            <input id="startDate" name="startDate" class="layui-input">
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">筛选条件</label>
-                                        <div class="layui-input-block">
-                                            <input type="checkbox" name="justOpen" title="仅下载open的项">
+                                            <select name="support">
+                                                <option value="all">全部</option>
+                                                <option value="mtk">MTK</option>
+                                                <option value="cq">展讯</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="layui-form-item" style="text-align: center">
-                                        <input type="submit" class="layui-btn" value="下载">
-                                        <button type="button" class="layui-btn">
-                                            <a th:href="@{|/issue/export|}" style="color: white">全部</a>
-                                        </button>
+                                        <input type="submit" class="layui-btn" value="导出">
+<!--                                        <button type="button" class="layui-btn">-->
+<!--                                            <a th:href="@{|/issue/export|}" style="color: white">全部</a>-->
+<!--                                        </button>-->
                                     </div>
                                 </form>
                                 <div class="layui-form-item">
